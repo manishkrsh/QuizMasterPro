@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Spline+Sans%3Awght%40400%3B500%3B700" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>QuizMaster Pro - Results</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+      :root {
+        --primary-50: #f0fdf6;
+        --primary-100: #dcfce9;
+        --primary-200: #bbf7d4;
+        --primary-300: #86efb6;
+        --primary-400: #4ade8f;
+        --primary-500: #22c56a;
+        --primary-600: #16a354;
+        --primary-700: #158046;
+        --primary-800: #16653b;
+        --primary-900: #145332;
+        --primary-950: #0a2d1a;
+      }
+    </style>
+</head>
+<body class="bg-gray-900 text-white" style='font-family: "Spline Sans", "Noto Sans", sans-serif;'>
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<header class="sticky top-0 z-10 w-full bg-gray-900/80 backdrop-blur-md">
+<div class="container mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex h-16 items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex-shrink-0">
+<svg class="h-8 w-8 text-[var(--primary-400)]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h1 class="text-xl font-bold tracking-tight">QuizMaster Pro</h1>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<nav class="flex items-center gap-6 text-sm">
+<a class="font-medium text-gray-300 transition-colors hover:text-white" href="index.html">Home</a>
+<a class="font-medium text-gray-300 transition-colors hover:text-white" href="quiz.html">Quizzes</a>
+<a class="font-bold text-[var(--primary-400)] transition-colors hover:text-[var(--primary-300)]" href="results.html">Results</a>
+</nav>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACVIjkO7PrpGZKRRmt1wGeSBkPbcpcNOvcE4BoAvyVQOqHq8tp74qnKfWwvtU6K8uOKetZIp544_W323MejBk9LAf_fZXc2bUit5-9D6QnvBSLTwtQEpecdaIEROeJy2r_osw-1urzSD6VqOcfeUazUjL7vWsOn8gkADIKbhN1hWxncy0AdQD_lxiSrB5UkK0DI8y1p0IM5hmTO8sm-uv5tp7f4xijaDo6aKBfEYSmPWuRX5NCJYiQ_BqYZoWbrud1QyPiAP-0IBg");'></div>
+</div>
+<button class="md:hidden rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
+<span class="sr-only">Open menu</span>
+<svg aria-hidden="true" class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+<path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1">
+<div class="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+<div class="max-w-4xl mx-auto">
+<div class="mb-8 text-center">
+<h2 class="text-4xl font-extrabold tracking-tight sm:text-5xl">Quiz Results</h2>
+<p class="mt-4 text-lg text-gray-400">Great job on completing the quiz! Here's how you did.</p>
+</div>
+<div class="mb-8 rounded-xl bg-gray-800 p-6 shadow-lg">
+<div class="flex items-center justify-center gap-6">
+<div class="text-center">
+<p class="text-sm font-medium text-gray-400">Your Score</p>
+<p class="text-5xl font-bold text-[var(--primary-400)]" id="final-score">0/10</p>
+</div>
+<div class="h-16 w-px bg-gray-700"></div>
+<div class="text-center">
+<p class="text-sm font-medium text-gray-400">Accuracy</p>
+<p class="text-5xl font-bold" id="accuracy">0%</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-2 space-y-6">
+<h3 class="text-2xl font-bold tracking-tight">Review Your Answers</h3>
+<div class="divide-y divide-gray-800 rounded-lg bg-gray-800/50 overflow-hidden" id="answers-review">
+<!-- Answers will be dynamically loaded here -->
+</div>
+</div>
+<div class="space-y-6">
+<h3 class="text-2xl font-bold tracking-tight">High Scores</h3>
+<div class="rounded-lg bg-gray-800/50 p-5">
+<ul class="divide-y divide-gray-800">
+<li class="py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-yellow-400">1.</span>
+<p class="font-medium">PlayerOne</p>
+</div>
+<p class="font-bold text-lg text-[var(--primary-400)]">10/10</p>
+</li>
+<li class="py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-gray-400">2.</span>
+<p class="font-medium">QuizWhiz</p>
+</div>
+<p class="font-bold text-lg">9/10</p>
+</li>
+<li class="py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-yellow-600">3.</span>
+<p class="font-medium">You</p>
+</div>
+<p class="font-bold text-lg" id="your-rank">0/10</p>
+</li>
+<li class="py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-gray-500">4.</span>
+<p class="font-medium">TriviaMaster</p>
+</div>
+<p class="font-bold text-lg">6/10</p>
+</li>
+<li class="py-3 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-gray-500">5.</span>
+<p class="font-medium">Newbie</p>
+</div>
+<p class="font-bold text-lg">5/10</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="mt-10 text-center">
+<button id="restart-btn" class="inline-flex items-center justify-center rounded-full bg-[var(--primary-500)] px-8 py-3 text-base font-bold text-white shadow-lg transition-transform duration-200 hover:bg-[var(--primary-600)] hover:scale-105 active:scale-100">
+                Restart Quiz
+              </button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-gray-900 border-t border-gray-800">
+<div class="container mx-auto px-4 py-6 text-center text-gray-400 text-sm sm:px-6 lg:px-8">
+<p>© 2024 QuizMaster Pro. All rights reserved.</p>
+</div>
+</footer>
+</div>
+
+<script src="results.js"></script>
+</body>
+</html>
