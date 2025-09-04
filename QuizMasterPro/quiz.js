@@ -4,6 +4,7 @@
 let currentQuestion = 0;
 let score = 0;
 let userAnswers = [];
+let scored = [];
 let timeLeft = 30;
 let timerInterval;
 let quizData = [];
@@ -128,14 +129,24 @@ function loadQuestion() {
 
         // Record answer immediately on option selection and lock inputs
         input.addEventListener('change', () => {
-            // Only record if not previously answered (non-null)
-            if (userAnswers[currentQuestion] === undefined || userAnswers[currentQuestion] === null) {
+            const prior = userAnswers[currentQuestion];
+            // If previously answered (non-null), ignore
+            if (prior !== undefined && prior !== null) return;
+
+            // If previously skipped (null), allow changing selection without locking or scoring now
+            if (prior === null) {
+                userAnswers[currentQuestion] = index;
+                return;
+            }
+
+            // First-time answer on fresh question → record and lock immediately, score now
+            if (prior === undefined) {
                 userAnswers[currentQuestion] = index;
                 if (index === quizData[currentQuestion].correct) {
                     score++;
+                    scored[currentQuestion] = true;
                     currentScoreSpan.textContent = score;
                 }
-                // lock all inputs for this question
                 const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
                 inputs.forEach((inp) => { inp.disabled = true; });
             }
@@ -211,7 +222,19 @@ function saveAnswer() {
 
 // Next question
 function nextQuestion() {
-    saveAnswer();
+    // If this question was previously skipped (null) and now has a selection, finalize and score once
+    if (userAnswers[currentQuestion] !== undefined && userAnswers[currentQuestion] !== null && !scored[currentQuestion]) {
+        if (userAnswers[currentQuestion] === quizData[currentQuestion].correct) {
+            score++;
+            scored[currentQuestion] = true;
+            currentScoreSpan.textContent = score;
+        } else {
+            scored[currentQuestion] = true; // mark as finalized even if incorrect
+        }
+        // Lock inputs before leaving
+        const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
+        inputs.forEach((inp) => { inp.disabled = true; });
+    }
     
     if (currentQuestion < quizData.length - 1) {
         currentQuestion++;
