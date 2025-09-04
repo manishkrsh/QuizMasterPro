@@ -1,34 +1,44 @@
-# QuizMaster Pro - React Edition
+# QuizMaster Pro
 
-A modern, interactive quiz application built with React, featuring dynamic difficulty levels, real-time scoring, and comprehensive result tracking.
+A modern, interactive quiz application with both a vanilla JS and a React implementation. It features dynamic difficulty, per‑question timers, progress and scoring, and a themed UI.
 
 ## 🚀 Features
 
-- **React Functional Components** with hooks (useState, useEffect)
-- **React Router** for seamless navigation between pages
-- **Dynamic Difficulty Selection** (Easy: 45s, Medium: 30s, Hard: 15s per question)
-- **Real-time Timer** with auto-skip functionality
-- **Score Tracking** and progress visualization
-- **Comprehensive Results** with answer review
-- **Responsive Design** using Tailwind CSS
-- **State Management** for quiz flow and data persistence
+Vanilla JS (in `quiz.html`, `quiz.js`):
+- **Dynamic Difficulty** (Easy 45s, Medium 30s, Hard 15s per question)
+- **Per‑question persistent timer**; no reset on revisit; timeout locks inputs
+- **Skip/Next navigation**, progress bar, and live score
+- **Themed toast notifications** (e.g., time’s up)
+
+React (in `src/`):
+- **React components** with hooks and React Router
+- **Per‑question persistent timer** and timeout enforcement
+- **Results page** with summary and review
+- **Tailwind CSS** themed UI
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/
-│   ├── Welcome.js      # Landing page with difficulty selection
-│   ├── Quiz.js         # Main quiz interface
-│   └── Results.js      # Results and answer review
-├── data/
-│   └── quizData.js     # Quiz questions and configuration
-├── App.js              # Main app with routing
-├── index.js            # React entry point
-└── index.css           # Global styles
+QuizMasterPro/
+├── index.html          # Welcome (vanilla)
+├── welcome.js          # Welcome logic (vanilla)
+├── quiz.html           # Quiz (vanilla)
+├── quiz.js             # Quiz logic (vanilla)
+├── results.html        # Results (vanilla)
+├── results.js          # Results logic (vanilla)
+├── profile.html        # Profile (name only)
+└── src/                # React app
+    ├── components/
+    │   ├── Welcome.js
+    │   ├── Quiz.js
+    │   └── Results.js
+    ├── data/quizData.js
+    ├── App.js
+    ├── index.js
+    └── index.css
 ```
 
-## 🛠️ Installation & Setup
+## 🛠️ Installation & Setup (React)
 
 1. **Install Dependencies**
    ```bash
@@ -40,64 +50,13 @@ src/
    npm start
    ```
 
-3. **Open in Browser**
-   Navigate to `http://localhost:3000`
+3. **Open in Browser**: `http://localhost:3000`
 
-## 🎯 Key Changes Made
+## 🧠 Behavior Notes
 
-### ✅ Requirements Implemented
-
-1. **Previous Button Removed**: No option to go back to previous questions
-2. **Skip Button**: Replaces previous functionality for forward-only navigation
-3. **React Functional Components**: All components use hooks (useState, useEffect)
-4. **Props Usage**: Effective data passing between components
-5. **Tailwind CSS**: Consistent styling throughout
-6. **State Management**: Complete quiz flow state transitions
-7. **React Router**: Routes for `/`, `/quiz`, and `/results`
-
-### 🔄 State Flow
-
-1. **Load Questions** → Initialize quiz state from `quizData.js`
-2. **Question Flow** → Capture selection → Lock answer → Navigate next
-3. **Completion** → Compute score → Navigate to Results → Allow Restart
-
-### 🎮 User Experience
-
-- **Welcome Page**: Select difficulty level and start quiz
-- **Quiz Page**: Answer questions with timer, skip option, and progress tracking
-- **Results Page**: View score, accuracy, detailed answer review, and restart option
-
-## 🧩 Technical Implementation
-
-### State Management
-- `useState` for component-level state
-- `useEffect` for side effects and lifecycle management
-- `localStorage` for data persistence between routes
-
-### Routing
-- React Router v6 with BrowserRouter
-- Programmatic navigation with `useNavigate`
-- Route protection and data validation
-
-### Quiz Logic
-- Dynamic timer based on difficulty selection
-- Answer locking mechanism
-- Score calculation and progress tracking
-- Auto-skip on timeout
-
-## 🎨 Styling
-
-- **Tailwind CSS** for utility-first styling
-- **Custom CSS Variables** for consistent theming
-- **Responsive Design** for all screen sizes
-- **Smooth Animations** and hover effects
-
-## 📱 Responsive Features
-
-- Mobile-first design approach
-- Adaptive layouts for different screen sizes
-- Touch-friendly interface elements
-- Optimized typography scaling
+- Timers are tracked per question. Revisiting does not reset remaining time.
+- If a question’s timer hits 0, inputs are disabled and a themed toast says: “Time's up for this question. Please proceed to the next question.”
+- Navigation uses Skip/Next; previous is available in vanilla but respects timeouts.
 
 ## 🔧 Customization
 
@@ -124,13 +83,13 @@ export const difficulties = [
 ];
 ```
 
-## 🚀 Build for Production
+## 🚀 Build for Production (React)
 
 ```bash
 npm run build
 ```
 
-This creates an optimized production build in the `build` folder.
+Creates an optimized build in the `build` folder.
 
 ## 📄 License
 

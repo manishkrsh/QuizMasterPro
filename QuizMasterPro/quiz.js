@@ -9,6 +9,8 @@ let timeLeft = 30;
 let timerInterval;
 let quizData = [];
 let selectedDifficulty = 'medium';
+let perQuestionTimeLeft = [];
+let timedOutQuestions = [];
 
 // DOM elements
 const questionText = document.getElementById('question-text');
@@ -21,6 +23,26 @@ const timerSpan = document.getElementById('timer');
 const nextBtn = document.getElementById('next-btn');
 const skipBtn = document.getElementById('skip-btn');
 const prevBtn = document.getElementById('prev-btn');
+const toastEl = document.getElementById('toast');
+const toastMsgEl = document.getElementById('toast-message');
+
+function showToast(message) {
+    if (!toastEl || !toastMsgEl) {
+        alert(message);
+        return;
+    }
+    toastMsgEl.textContent = message;
+    toastEl.classList.remove('hidden');
+    toastEl.classList.add('toast-show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => {
+        toastEl.classList.add('toast-hide');
+        setTimeout(() => {
+            toastEl.classList.remove('toast-show', 'toast-hide');
+            toastEl.classList.add('hidden');
+        }, 200);
+    }, 2000);
+}
 
 function decodeHtml(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -49,26 +71,67 @@ function getTimeLimit(difficulty) {
 }
 
 async function loadQuestions() {
-    const url = getApiUrl(selectedDifficulty);
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Failed to fetch questions');
-    const data = await res.json();
-    if (!data || !Array.isArray(data.results)) throw new Error('Malformed response');
+    try {
+        // Try to fetch from API first
+        const url = getApiUrl(selectedDifficulty);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('API request failed');
+        const data = await res.json();
+        if (!data || !Array.isArray(data.results)) throw new Error('Malformed API response');
 
-    const transformed = data.results.map((q, idx) => {
-        const correct = decodeHtml(q.correct_answer);
-        const incorrect = (q.incorrect_answers || []).map(decodeHtml);
-        const options = shuffleArray([correct, ...incorrect]);
-        const correctIndex = options.findIndex(o => o === correct);
-        return {
-            id: idx + 1,
-            question: decodeHtml(q.question),
-            options,
-            correct: correctIndex
-        };
-    });
+        const transformed = data.results.map((q, idx) => {
+            const correct = decodeHtml(q.correct_answer);
+            const incorrect = (q.incorrect_answers || []).map(decodeHtml);
+            const options = shuffleArray([correct, ...incorrect]);
+            const correctIndex = options.findIndex(o => o === correct);
+            return {
+                id: idx + 1,
+                question: decodeHtml(q.question),
+                options,
+                correct: correctIndex
+            };
+        });
 
-    quizData = shuffleArray(transformed).slice(0, 10);
+        quizData = shuffleArray(transformed).slice(0, 10);
+    } catch (error) {
+        console.warn('API failed, loading offline questions:', error.message);
+        // Fallback to local questions
+        await loadOfflineQuestions();
+    }
+    
+    // Initialize per-question timers and timeout flags
+    const perQuestionLimit = getTimeLimit(selectedDifficulty);
+    perQuestionTimeLeft = new Array(quizData.length).fill(perQuestionLimit);
+    timedOutQuestions = new Array(quizData.length).fill(false);
+}
+
+async function loadOfflineQuestions() {
+    try {
+        const response = await fetch('./questions.json');
+        if (!response.ok) throw new Error('Failed to load offline questions');
+        const data = await response.json();
+        
+        if (!data[selectedDifficulty] || !Array.isArray(data[selectedDifficulty])) {
+            throw new Error('Invalid offline questions format');
+        }
+
+        const transformed = data[selectedDifficulty].map((q, idx) => {
+            const correct = q.correct_answer;
+            const incorrect = q.incorrect_answers || [];
+            const options = shuffleArray([correct, ...incorrect]);
+            const correctIndex = options.findIndex(o => o === correct);
+            return {
+                id: idx + 1,
+                question: q.question,
+                options,
+                correct: correctIndex
+            };
+        });
+
+        quizData = shuffleArray(transformed).slice(0, 10);
+    } catch (error) {
+        throw new Error('Failed to load questions. Please check your internet connection and try again.');
+    }
 }
 
 // Initialize quiz
@@ -122,13 +185,26 @@ function loadQuestion() {
         if (prior !== undefined) {
             input.checked = prior === index;
         }
-        if (wasAnswered) {
+        // Disable if previously answered or timed out
+        if (wasAnswered || timedOutQuestions[currentQuestion]) {
             input.disabled = true;
             label.className += ' cursor-default';
         }
 
+        // If timed out, show message on label click
+        label.addEventListener('click', (e) => {
+            if (timedOutQuestions[currentQuestion]) {
+                e.preventDefault();
+                showToast("Time's up for this question. Please proceed to the next question.");
+            }
+        });
+
         // Record answer immediately on option selection and lock inputs
         input.addEventListener('change', () => {
+            if (timedOutQuestions[currentQuestion]) {
+                showToast("Time's up for this question. Please proceed to the next question.");
+                return;
+            }
             const prior = userAnswers[currentQuestion];
             // If previously answered (non-null), ignore
             if (prior !== undefined && prior !== null) return;
@@ -165,25 +241,45 @@ function loadQuestion() {
     nextBtn.textContent = currentQuestion === quizData.length - 1 ? 'Finish' : 'Next';
     if (prevBtn) prevBtn.disabled = currentQuestion === 0;
     
-    // Reset timer
-    timeLeft = getTimeLimit(selectedDifficulty);
-    updateTimer();
+    // Restore timer for this question (persisted across navigation)
+    const restored = perQuestionTimeLeft[currentQuestion];
+    const isTimedOut = timedOutQuestions[currentQuestion] === true;
+    timeLeft = typeof restored === 'number' ? restored : getTimeLimit(selectedDifficulty);
+    if (isTimedOut || timeLeft <= 0) {
+        timeLeft = 0;
+        updateTimer(true);
+        // Ensure inputs are disabled if timed out
+        const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
+        inputs.forEach((inp) => { inp.disabled = true; });
+    } else {
+        updateTimer(false);
+    }
 }
 
 // Start timer
 function startTimer() {
+    // Do not start timer if already timed out or question finalized
+    if (timedOutQuestions[currentQuestion] || timeLeft <= 0 || (userAnswers[currentQuestion] !== undefined && userAnswers[currentQuestion] !== null)) {
+        return;
+    }
+    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
         timeLeft--;
-        updateTimer();
-        
-        if (timeLeft <= 0) {
+        if (timeLeft < 0) timeLeft = 0;
+        perQuestionTimeLeft[currentQuestion] = timeLeft;
+        updateTimer(timeLeft === 0);
+        if (timeLeft === 0) {
             handleTimeUp();
         }
     }, 1000);
 }
 
 // Update timer display
-function updateTimer() {
+function updateTimer(isTimedOutDisplay) {
+    if (isTimedOutDisplay) {
+        timerSpan.textContent = "Time's up! Please proceed to the next question";
+        return;
+    }
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
     timerSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
@@ -192,8 +288,13 @@ function updateTimer() {
 // Handle time up
 function handleTimeUp() {
     clearInterval(timerInterval);
-    // Auto-skip to next question
-    nextQuestion();
+    timedOutQuestions[currentQuestion] = true;
+    perQuestionTimeLeft[currentQuestion] = 0;
+    // Lock inputs on timeout
+    const inputs = optionsContainer.querySelectorAll('input[name="quiz-option"]');
+    inputs.forEach((inp) => { inp.disabled = true; });
+    updateTimer(true);
+    // Do not auto-advance; user must proceed manually
 }
 
 // Get selected answer
@@ -222,6 +323,8 @@ function saveAnswer() {
 
 // Next question
 function nextQuestion() {
+    // Persist remaining time for current question before navigating
+    perQuestionTimeLeft[currentQuestion] = timeLeft;
     // If this question was previously skipped (null) and now has a selection, finalize and score once
     if (userAnswers[currentQuestion] !== undefined && userAnswers[currentQuestion] !== null && !scored[currentQuestion]) {
         if (userAnswers[currentQuestion] === quizData[currentQuestion].correct) {
@@ -249,6 +352,8 @@ function nextQuestion() {
 
 // Skip question
 function skipQuestion() {
+    // Persist remaining time and mark as skipped (but not reset)
+    perQuestionTimeLeft[currentQuestion] = timeLeft;
     userAnswers[currentQuestion] = null;
     nextQuestion();
 }
@@ -256,6 +361,8 @@ function skipQuestion() {
 // Previous question
 function previousQuestion() {
     if (currentQuestion > 0) {
+        // Persist remaining time before going back
+        perQuestionTimeLeft[currentQuestion] = timeLeft;
         clearInterval(timerInterval);
         currentQuestion--;
         loadQuestion();

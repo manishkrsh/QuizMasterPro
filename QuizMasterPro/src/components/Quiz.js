@@ -15,6 +15,10 @@ const Quiz = () => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [perQuestionTimeLeft, setPerQuestionTimeLeft] = useState([]);
+  const [timedOut, setTimedOut] = useState([]);
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
 
   // Initialize quiz
   useEffect(() => {
@@ -29,6 +33,10 @@ const Quiz = () => {
         setError('');
         const fetched = await fetchOpenTdbQuestions(difficulty, 10);
         setQuestions(fetched);
+        // Initialize per-question timers and timeout flags
+        const defaultLimit = difficultyConfig.timeLimit;
+        setPerQuestionTimeLeft(new Array(fetched.length).fill(defaultLimit));
+        setTimedOut(new Array(fetched.length).fill(false));
       } catch (e) {
         setError(e.message || 'Failed to load questions');
       } finally {
@@ -40,21 +48,45 @@ const Quiz = () => {
 
   // Timer effect
   useEffect(() => {
-    if (timeLeft > 0 && !isAnswered) {
-      const timer = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !isAnswered) {
-      handleSkip();
-    }
-  }, [timeLeft, isAnswered]);
+    if (!questions.length) return;
+    if (timedOut[currentQuestion]) return; // already timed out, do not tick
+    if (isAnswered) return; // answered, do not tick
+    if (timeLeft <= 0) return;
+
+    const timer = setTimeout(() => {
+      setTimeLeft(prev => {
+        const nextVal = Math.max(prev - 1, 0);
+        setPerQuestionTimeLeft(prevArr => {
+          const updated = [...prevArr];
+          updated[currentQuestion] = nextVal;
+          return updated;
+        });
+        if (nextVal === 0) {
+          setTimedOut(prevArr => {
+            const updated = [...prevArr];
+            updated[currentQuestion] = true;
+            return updated;
+          });
+          // flash a toast when the timer hits zero
+          setToastMessage("Time's up for this question. Please proceed to the next question.");
+          setShowToast(true);
+        }
+        return nextVal;
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [questions.length, currentQuestion, timeLeft, isAnswered, timedOut, questions]);
 
   // Load saved answer when question changes
   useEffect(() => {
     const savedAnswer = userAnswers[currentQuestion];
     setSelectedAnswer(savedAnswer !== undefined ? savedAnswer : null);
     setIsAnswered(savedAnswer !== undefined);
+    // Restore timer for this question
+    const difficultyConfig = difficulties.find(d => d.id === selectedDifficulty) || { timeLimit: 30 };
+    const restored = perQuestionTimeLeft[currentQuestion];
+    const restoredTime = typeof restored === 'number' ? restored : difficultyConfig.timeLimit;
+    setTimeLeft(restoredTime);
   }, [currentQuestion, userAnswers]);
 
   const totalQuestions = questions.length || 1;
@@ -63,6 +95,11 @@ const Quiz = () => {
 
   const handleAnswerSelect = (answerIndex) => {
     if (isAnswered) return;
+    if (timedOut[currentQuestion]) {
+      setToastMessage("Time's up for this question. Please proceed to the next question.");
+      setShowToast(true);
+      return;
+    }
     
     setSelectedAnswer(answerIndex);
     setIsAnswered(true);
@@ -79,10 +116,14 @@ const Quiz = () => {
   };
 
   const handleNext = () => {
+    // Persist remaining time before navigating
+    setPerQuestionTimeLeft(prevArr => {
+      const updated = [...prevArr];
+      updated[currentQuestion] = timeLeft;
+      return updated;
+    });
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      const difficultyConfig = difficulties.find(d => d.id === selectedDifficulty);
-      setTimeLeft(difficultyConfig.timeLimit);
       setIsAnswered(false);
     } else {
       finishQuiz();
@@ -94,6 +135,12 @@ const Quiz = () => {
     const newAnswers = [...userAnswers];
     newAnswers[currentQuestion] = null;
     setUserAnswers(newAnswers);
+    // Persist remaining time when skipping
+    setPerQuestionTimeLeft(prevArr => {
+      const updated = [...prevArr];
+      updated[currentQuestion] = timeLeft;
+      return updated;
+    });
     
     handleNext();
   };
@@ -178,7 +225,9 @@ const Quiz = () => {
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 6 12 12 16 14"></polyline>
                   </svg>
-                  <span>{formatTime(timeLeft)}</span>
+                  <span>
+                    {timedOut[currentQuestion] ? "Time's up! Please proceed to the next question" : formatTime(timeLeft)}
+                  </span>
                 </div>
               </div>
               <div className="w-full bg-gray-700 rounded-full h-2.5">
@@ -201,7 +250,14 @@ const Quiz = () => {
                       selectedAnswer === index
                         ? 'border-[#38e07b] bg-gray-700/50'
                         : 'border-gray-700 hover:border-[#38e07b]'
-                    } ${isAnswered ? 'cursor-default' : ''}`}
+                    } ${(isAnswered || timedOut[currentQuestion]) ? 'cursor-default' : ''}`}
+                    onClick={(e) => {
+                      if (timedOut[currentQuestion]) {
+                        e.preventDefault();
+                        setToastMessage("Time's up for this question. Please proceed to the next question.");
+                        setShowToast(true);
+                      }
+                    }}
                   >
                     <input
                       type="radio"
@@ -210,7 +266,7 @@ const Quiz = () => {
                       checked={selectedAnswer === index}
                       onChange={() => handleAnswerSelect(index)}
                       className="h-5 w-5 shrink-0 appearance-none rounded-full border-2 border-gray-600 bg-transparent checked:border-[#38e07b] checked:bg-[image:--radio-dot-svg] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#38e07b] focus:ring-offset-gray-800"
-                      disabled={isAnswered}
+                      disabled={isAnswered || timedOut[currentQuestion]}
                     />
                     <span className="text-base font-medium text-gray-300">{option}</span>
                   </label>
@@ -239,6 +295,21 @@ const Quiz = () => {
           </div>
         </main>
       </div>
+      {/* Toast */}
+      {showToast && (
+        <div className="fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+          <div className="max-w-xl w-full">
+            <div className="rounded-lg bg-gray-900/95 border border-gray-700 text-gray-100 shadow-xl px-4 py-3 flex items-start gap-3">
+              <div className="text-[#f59e0b] mt-0.5">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 4h.01M12 5a7 7 0 100 14 7 7 0 000-14z" />
+                </svg>
+              </div>
+              <div className="text-sm font-medium">{toastMessage}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

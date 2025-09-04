@@ -28,7 +28,7 @@
 </div>
 <div class="flex items-center gap-4">
 <div class="text-sm font-medium text-gray-300">Score: <span class="font-bold text-[#38e07b]" id="current-score">0</span></div>
-<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA-aYzW6K1opI_aFoB9XIQRfk-I7x7e_xnJraVgrBK_p-TD_8mq2_p7H-GR-WLHEhNoPoYPtVQhj61Dn1UT59THI1JfwYeBTArnvginaJdIm3EKX6KkCMptQWdQFRrsl6cCQQGefMyBN4cWMOO9gJqOLsD-9j_C1j_Es-EAkDgpybPdgTRnapondrh-3rTI2z6eKRwdCfAGas-7lkfwGk3E_ISL1zpV8C8vhv5kd3LhEK2wy7MAR-4jOsPDmIlrCeA9pak9QSc3EEs");'></div>
+<a href="profile.html" class="rounded-full border border-gray-700 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-gray-800 hover:border-gray-600">Profile</a>
 </div>
 </header>
 <main class="flex flex-1 justify-center py-10 px-4 sm:px-6 lg:px-8">
@@ -74,6 +74,28 @@
 </div>
 </main>
 </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast" class="fixed inset-x-0 top-4 z-50 flex justify-center px-4 pointer-events-none hidden">
+  <div class="max-w-xl w-full">
+    <div class="rounded-lg bg-gray-900/95 border border-gray-700 text-gray-100 shadow-xl px-4 py-3 flex items-start gap-3 pointer-events-auto">
+      <div class="text-[#f59e0b] mt-0.5">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 4h.01M12 5a7 7 0 100 14 7 7 0 000-14z" />
+        </svg>
+      </div>
+      <div id="toast-message" class="text-sm font-medium">Message</div>
+    </div>
+  </div>
+  
+  <style>
+    /* fade in/out helper */
+    .toast-show { display: flex !important; animation: fadeIn 200ms ease-out; }
+    .toast-hide { animation: fadeOut 200ms ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-6px); } }
+  </style>
 </div>
 
 <script src="quiz.js"></script>

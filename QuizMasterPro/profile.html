@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Spline+Sans:wght@400;500;700" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<title>Profile - QuizMaster Pro</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="bg-[#111827] text-white" style='font-family: "Spline Sans", "Noto Sans", sans-serif;'>
+  <div class="relative flex min-h-screen flex-col overflow-x-hidden">
+    <header class="sticky top-0 z-10 w-full bg-[#111827]/80 backdrop-blur-md border-b border-gray-800">
+      <div class="mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-6 text-[#38e07b]">
+            <svg fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5V7.5l-4.5 4.5 4.5 4.5zm2 0l4.5-4.5-4.5-4.5v9z" fill="currentColor"></path>
+            </svg>
+          </div>
+          <h1 class="text-xl font-bold tracking-tight">QuizMaster Pro</h1>
+        </div>
+        <nav class="flex items-center gap-6 text-sm">
+          <a class="font-medium text-gray-300 transition-colors hover:text-white" href="index.html">Home</a>
+          <a class="font-medium text-gray-300 transition-colors hover:text-white" href="results.html">Results</a>
+          <span class="font-bold text-[#38e07b]">Profile</span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <div class="mx-auto max-w-xl px-6 py-10">
+        <div class="rounded-xl bg-gray-800 p-6 shadow-lg">
+          <h2 class="text-2xl font-bold mb-4">Your Profile</h2>
+          <p class="text-gray-300 mb-6">Enter your name to personalize your experience.</p>
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-gray-300" for="profile-name">Name</label>
+            <input id="profile-name" type="text" placeholder="Your name" class="w-full rounded-md bg-gray-900 border border-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#38e07b] focus:border-transparent" />
+            <button id="save-profile" class="mt-4 inline-flex items-center justify-center rounded-full bg-[#38e07b] px-6 py-2 text-base font-bold text-[#111827] transition-colors hover:bg-[#2fbc6a]">Save</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const input = document.getElementById('profile-name');
+    const btn = document.getElementById('save-profile');
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('profileName') || '';
+      input.value = saved;
+    });
+    btn.addEventListener('click', () => {
+      localStorage.setItem('profileName', input.value.trim());
+      // lightweight confirmation inline
+      btn.textContent = 'Saved';
+      setTimeout(() => { btn.textContent = 'Save'; }, 1200);
+    });
+  </script>
+</body>
+</html>
+
+

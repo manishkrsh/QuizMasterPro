@@ -1,0 +1,162 @@
+{
+  "easy": [
+    {
+      "question": "What is the capital of France?",
+      "correct_answer": "Paris",
+      "incorrect_answers": ["London", "Berlin", "Madrid"]
+    },
+    {
+      "question": "Which planet is known as the Red Planet?",
+      "correct_answer": "Mars",
+      "incorrect_answers": ["Venus", "Jupiter", "Saturn"]
+    },
+    {
+      "question": "What is 2 + 2?",
+      "correct_answer": "4",
+      "incorrect_answers": ["3", "5", "6"]
+    },
+    {
+      "question": "Which ocean is the largest?",
+      "correct_answer": "Pacific Ocean",
+      "incorrect_answers": ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean"]
+    },
+    {
+      "question": "What is the chemical symbol for water?",
+      "correct_answer": "H2O",
+      "incorrect_answers": ["CO2", "NaCl", "O2"]
+    },
+    {
+      "question": "Which country is home to the kangaroo?",
+      "correct_answer": "Australia",
+      "incorrect_answers": ["Brazil", "India", "Canada"]
+    },
+    {
+      "question": "What is the largest mammal in the world?",
+      "correct_answer": "Blue whale",
+      "incorrect_answers": ["African elephant", "Giraffe", "Hippopotamus"]
+    },
+    {
+      "question": "Which season comes after winter?",
+      "correct_answer": "Spring",
+      "incorrect_answers": ["Summer", "Autumn", "Fall"]
+    },
+    {
+      "question": "What is the smallest country in the world?",
+      "correct_answer": "Vatican City",
+      "incorrect_answers": ["Monaco", "Liechtenstein", "San Marino"]
+    },
+    {
+      "question": "Which fruit is known as the 'king of fruits'?",
+      "correct_answer": "Mango",
+      "incorrect_answers": ["Apple", "Banana", "Orange"]
+    }
+  ],
+  "medium": [
+    {
+      "question": "Who painted the Mona Lisa?",
+      "correct_answer": "Leonardo da Vinci",
+      "incorrect_answers": ["Vincent van Gogh", "Pablo Picasso", "Michelangelo"]
+    },
+    {
+      "question": "What is the speed of light in vacuum?",
+      "correct_answer": "299,792,458 meters per second",
+      "incorrect_answers": ["300,000,000 m/s", "299,000,000 m/s", "301,000,000 m/s"]
+    },
+    {
+      "question": "Which programming language was created by Brendan Eich?",
+      "correct_answer": "JavaScript",
+      "incorrect_answers": ["Python", "Java", "C++"]
+    },
+    {
+      "question": "What is the largest organ in the human body?",
+      "correct_answer": "Skin",
+      "incorrect_answers": ["Liver", "Lung", "Heart"]
+    },
+    {
+      "question": "Which element has the atomic number 1?",
+      "correct_answer": "Hydrogen",
+      "incorrect_answers": ["Helium", "Lithium", "Carbon"]
+    },
+    {
+      "question": "What is the currency of Japan?",
+      "correct_answer": "Yen",
+      "incorrect_answers": ["Won", "Yuan", "Baht"]
+    },
+    {
+      "question": "Which mountain is the highest in the world?",
+      "correct_answer": "Mount Everest",
+      "incorrect_answers": ["K2", "Kangchenjunga", "Lhotse"]
+    },
+    {
+      "question": "What is the largest desert in the world?",
+      "correct_answer": "Antarctic Desert",
+      "incorrect_answers": ["Sahara Desert", "Arabian Desert", "Gobi Desert"]
+    },
+    {
+      "question": "Which country has the most natural lakes?",
+      "correct_answer": "Canada",
+      "incorrect_answers": ["Russia", "United States", "Finland"]
+    },
+    {
+      "question": "What is the hardest natural substance on Earth?",
+      "correct_answer": "Diamond",
+      "incorrect_answers": ["Quartz", "Topaz", "Corundum"]
+    }
+  ],
+  "hard": [
+    {
+      "question": "What is the Heisenberg Uncertainty Principle?",
+      "correct_answer": "You cannot simultaneously know the exact position and momentum of a particle",
+      "incorrect_answers": [
+        "Energy cannot be created or destroyed",
+        "Light behaves as both wave and particle",
+        "Time dilation occurs at high speeds"
+      ]
+    },
+    {
+      "question": "Which algorithm has the best average-case time complexity for sorting?",
+      "correct_answer": "Quick Sort",
+      "incorrect_answers": ["Bubble Sort", "Selection Sort", "Insertion Sort"]
+    },
+    {
+      "question": "What is the name of the process by which plants convert light energy into chemical energy?",
+      "correct_answer": "Photosynthesis",
+      "incorrect_answers": ["Respiration", "Transpiration", "Fermentation"]
+    },
+    {
+      "question": "Which theorem states that in a right triangle, the square of the hypotenuse equals the sum of squares of the other two sides?",
+      "correct_answer": "Pythagorean Theorem",
+      "incorrect_answers": ["Fermat's Last Theorem", "Fundamental Theorem of Calculus", "Central Limit Theorem"]
+    },
+    {
+      "question": "What is the name of the enzyme that breaks down lactose?",
+      "correct_answer": "Lactase",
+      "incorrect_answers": ["Amylase", "Protease", "Lipase"]
+    },
+    {
+      "question": "Which programming paradigm emphasizes immutability and pure functions?",
+      "correct_answer": "Functional Programming",
+      "incorrect_answers": ["Object-Oriented Programming", "Procedural Programming", "Logic Programming"]
+    },
+    {
+      "question": "What is the name of the phenomenon where light bends when passing through different mediums?",
+      "correct_answer": "Refraction",
+      "incorrect_answers": ["Reflection", "Diffraction", "Interference"]
+    },
+    {
+      "question": "Which data structure follows the LIFO (Last In, First Out) principle?",
+      "correct_answer": "Stack",
+      "incorrect_answers": ["Queue", "Heap", "Tree"]
+    },
+    {
+      "question": "What is the name of the process by which a solid changes directly to a gas?",
+      "correct_answer": "Sublimation",
+      "incorrect_answers": ["Evaporation", "Condensation", "Deposition"]
+    },
+    {
+      "question": "Which sorting algorithm has a guaranteed O(n log n) time complexity?",
+      "correct_answer": "Merge Sort",
+      "incorrect_answers": ["Quick Sort", "Heap Sort", "Bubble Sort"]
+    }
+  ]
+}

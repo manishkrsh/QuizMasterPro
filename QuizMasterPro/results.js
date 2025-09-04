@@ -16,7 +16,10 @@ function loadResults() {
     }
     
     const { score, totalQuestions, userAnswers, quizData } = results;
-    const accuracy = Math.round((score / totalQuestions) * 100);
+    
+    // Calculate accuracy based on attended questions (non-skipped)
+    const attendedQuestions = userAnswers.filter(answer => answer !== null && answer !== undefined).length;
+    const accuracy = attendedQuestions > 0 ? Math.round((score / attendedQuestions) * 100) : 0;
     
     // Update score display
     finalScoreSpan.textContent = `${score}/${totalQuestions}`;
